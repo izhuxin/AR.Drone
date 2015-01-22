@@ -61,11 +61,13 @@
     }
 }
 
-- (void)startHeartBeat {
+- (void)startHeartBeat
+{
     [self.delegate sendHeartBeat];
 }
 
-- (BOOL)sendData:(NSData *)data ToServerWithCompletion:(confirmBlock)completion {
+- (BOOL)sendData:(NSData *)data ToServerWithCompletion:(confirmBlock)completion
+{
     [_svrSock writeData:data withTimeout:TCPSocketNotTimeOut tag:_taskTag];
     self.taskTag++;
     return YES;
@@ -78,21 +80,27 @@
     self.connected = NO;
 }
 
-- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port {
+- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
+{
     NSLog(@"Connect Success!");
+    //Then start HeartBeat to Server and all data from the Server will be caught by:
+    //socket:didReadData:withTag:tag
+
     [self startHeartBeat];
     self.connected = YES;
     _aBlock( YES, nil );
 }
 
-- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-    NSLog(@"Receive: %@",  [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
+{
+    NSLog(@"Receive: %@", [[NSString alloc] initWithData:data
+                                                encoding:NSUTF8StringEncoding]);
     _receiveFilter( data, tag );
     _taskTag++;
 }
 
-- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag {
-//    NSLog(@"Write Success, tell the server");
+- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
+{
     [sock readDataWithTimeout:TCPSocketNotTimeOut tag:_taskTag++];
 }
 

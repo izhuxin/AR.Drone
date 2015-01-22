@@ -12,5 +12,4 @@
 
 + (NSData *)generateSocketPacket:(NSString *)command Identifier:(NSString *)packageId object:(id)first,...;
 
-+ (NSMutableData *)generateSocketPacket:(char)version clientType:(char)client packetType:(char)type operateCode:(char)code objects:(id)first,...;
 @end

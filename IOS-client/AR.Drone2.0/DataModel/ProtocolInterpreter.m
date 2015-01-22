@@ -24,7 +24,8 @@
 
 @implementation ProtocolInterpreter
 
-- (instancetype)init {
+- (instancetype)init
+{
     self = [super init];
     __weak id weakSelf = self;
     if ( self ) {
@@ -75,7 +76,8 @@
     return self;
 }
 
-- (void)processStateQuery {
+- (void)processStateQuery
+{
     NSArray *stateArray = @[@(_droneCommunicator.navigationState.controlState),
                             @(_droneCommunicator.navigationState.batteryLevel),
                             @(_droneCommunicator.navigationState.pitch),
@@ -103,18 +105,20 @@
     }];
 }
 
-- (void)sendHeartBeat {
+- (void)sendHeartBeat
+{
     NSData *package = [FunctionClass generateSocketPacket:HEARTBEAT Identifier:self.packageId object:nil];
     [self.svrCommunicator sendData:package ToServerWithCompletion:^(BOOL success, NSError *err) {
         if ( success ) {
             NSLog(@"Send HeartBeat");
         } else {
-            NSLog(@"Response HeartBeat Error: %@", err);
+            NSLog(@"HeartBeat Error: %@", err);
         }
     }];
 }
 
-- (void)processTakeoff {
+- (void)processTakeoff
+{
     [_droneCommunicator takeoff];
     NSData *package = [FunctionClass generateSocketPacket:TakeOff Identifier:self.packageId object:Succ, nil];
     [_svrCommunicator sendData:package ToServerWithCompletion:^(BOOL success, NSError *err) {
@@ -126,7 +130,8 @@
     }];
 }
 
-- (void)processLand {
+- (void)processLand
+{
     [_droneCommunicator land];
     NSData *package = [FunctionClass generateSocketPacket:Land Identifier:self.packageId object:Succ, nil];
     [_svrCommunicator sendData:package ToServerWithCompletion:^(BOOL success, NSError *err) {
@@ -138,7 +143,8 @@
     }];
 }
 
-- (void)processHorver {
+- (void)processHorver
+{
     [_droneCommunicator hover];
     NSData *package = [FunctionClass generateSocketPacket:Horver Identifier:self.packageId object:Succ, nil];
     [_svrCommunicator sendData:package ToServerWithCompletion:^(BOOL success, NSError *err) {
@@ -150,7 +156,8 @@
     }];
 }
 
-- (void)processFlyForWard:(NSArray *)argvs {
+- (void)processFlyForWard:(NSArray *)argvs
+{
     [self.moveCommandTimer invalidate];
     NSString *speed = argvs[0];
     _droneCommunicator.forwardSpeed = [speed doubleValue];
@@ -168,12 +175,14 @@
     }];
 }
 
-- (void)processEndMove:(NSTimer *)sender {
+- (void)processEndMove:(NSTimer *)sender
+{
     [sender invalidate];
     [_droneCommunicator hover];
 }
 
-- (void)processArgChange:(NSArray *)argvs {
+- (void)processArgChange:(NSArray *)argvs
+{
     [self.moveCommandTimer invalidate];
     NSString *argSpeed = argvs[0];
     NSString *time = argvs[1];
@@ -191,14 +200,19 @@
     }];
 }
 
-- (void)processHeightChange:(NSArray *)argvs {
+- (void)processHeightChange:(NSArray *)argvs
+{
     [self.moveCommandTimer invalidate];
     NSString *heightChange = argvs[0];
     NSString *time = argvs[1];
     _droneCommunicator.verticalSpeed = [heightChange doubleValue];
     _droneCommunicator.forwardSpeed = 0;
     _droneCommunicator.rotationSpeed = 0;
-    self.moveCommandTimer = [NSTimer scheduledTimerWithTimeInterval:[time doubleValue] target:self selector:@selector(processEndMove:) userInfo:nil repeats:NO];
+    self.moveCommandTimer = [NSTimer scheduledTimerWithTimeInterval:[time doubleValue]
+                                                             target:self
+                                                           selector:@selector(processEndMove:)
+                                                           userInfo:nil
+                                                            repeats:NO];
     NSData *packet = [FunctionClass generateSocketPacket:HeightChange Identifier:self.packageId object:Succ, nil];
     [_svrCommunicator sendData:packet ToServerWithCompletion:^(BOOL success, NSError *err) {
         if ( success ) {
@@ -209,7 +223,8 @@
     }];
 }
 
-- (void)start {
+- (void)start
+{
     [_droneCommunicator setupDefaults];
     [_svrCommunicator setupDefaults];
 }
