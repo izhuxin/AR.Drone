@@ -30,6 +30,7 @@ class Controller():
                 self.android_message = ''
             except socket.error:
                 self.ios_socket.connection.close()
+                self.ios_socket = None
                 self.ios_socket = SocketServer('', IOS_PORT, self.ios_message, self.ios_semaphore)
                 self.ios_socket.start()
             self.android_semaphore.release()
@@ -39,6 +40,7 @@ class Controller():
                 self.ios_message = ''
             except socket.error:
                 self.android_socket.connection.close()
+                self.android_socket = None
                 self.android_socket = SocketServer('', ANDROID_PORT, self.android_message, self.android_semaphore)
                 self.android_socket.start()
                 self.authentication()
